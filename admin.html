@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel | SWE 43-G</title>
+<style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h2 { color: #2563eb; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: 600; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    textarea { resize: vertical; }
+    button { background: #2563eb; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+    button:hover { background: #1d4ed8; }
+    #status { margin-top: 15px; text-align: center; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Add New Notice (Admin Panel)</h2>
+    
+    <div class="form-group">
+        <label>Notice Title:</label>
+        <input type="text" id="title" placeholder="E.g., OS Lab Report Submission" required>
+    </div>
+    
+    <div class="form-group">
+        <label>Category:</label>
+        <select id="type">
+            <option value="Quiz">Quiz</option>
+            <option value="Assignment">Assignment</option>
+            <option value="Lab Report">Lab Report</option>
+            <option value="Lab Assessment">Lab Assessment</option>
+            <option value="Lab Evaluation">Lab Evaluation</option>
+            <option value="Lab Presentation">Lab Presentation</option>
+            <option value="Final Presentation">Final Presentation</option>
+            <option value="Exam Update">Exam Update</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Date:</label>
+        <input type="text" id="date" placeholder="E.g., May 27, 2026" required>
+    </div>
+
+    <div class="form-group">
+        <label>Description (Details/Syllabus):</label>
+        <textarea id="description" rows="4" placeholder="Write notice details or syllabus here..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" id="urgent" style="width: auto;"> Is this Urgent?
+        </label>
+    </div>
+
+    <button id="submitBtn">Publish Notice</button>
+    <div id="status"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAm0Q97h8ZJcdQz_Q3wwDuiNL5pNM_7ZT8",
+        authDomain: "swe-43-g-portal.firebaseapp.com",
+        projectId: "swe-43-g-portal",
+        storageBucket: "swe-43-g-portal.firebasestorage.app",
+        messagingSenderId: "545475728530",
+        appId: "1:545475728530:web:fdcd19920c31db16f9c24b",
+        measurementId: "G-2SFVC4DTPK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const title = document.getElementById('title').value;
+        const type = document.getElementById('type').value;
+        const date = document.getElementById('date').value;
+        const description = document.getElementById('description').value;
+        const urgent = document.getElementById('urgent').checked;
+
+        if(!title || !date) {
+            alert("Title and Date are required!");
+            return;
+        }
+
+        try {
+            document.getElementById('status').innerText = "Publishing...";
+            document.getElementById('status').style.color = "blue";
+            
+            await addDoc(collection(db, "announcements"), {
+                title: title,
+                type: type,
+                date: date,
+                description: description,
+                urgent: urgent,
+                timestamp: new Date()
+            });
+
+            document.getElementById('status').innerText = "Notice Published Successfully!";
+            document.getElementById('status').style.color = "green";
+            
+            document.getElementById('title').value = '';
+            document.getElementById('date').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('urgent').checked = false;
+        } catch (e) {
+            console.error(e);
+            document.getElementById('status').innerText = "Error! Check console.";
+            document.getElementById('status').style.color = "red";
+        }
+    });
+</script>
+
+</body>
+</html>

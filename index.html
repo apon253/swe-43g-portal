@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWE 43-G | Academic Portal</title>
+<style>
+:root {
+    --bg-color: #f4f6f9;
+    --text-color: #333333;
+    --primary: #2563eb;
+    --secondary: #4f46e5;
+    --card-bg: #ffffff;
+    --border: #e5e7eb;
+    --hover-bg: #f8fafc;
+}
+
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --text-color: #f1f5f9;
+    --primary: #3b82f6;
+    --secondary: #6366f1;
+    --card-bg: #1e293b;
+    --border: #334155;
+    --hover-bg: #334155;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 1rem 5%;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.logo-g {
+    background: white;
+    color: var(--secondary);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 900;
+}
+
+nav { display: flex; gap: 20px; align-items: center; }
+
+.nav-links { display: flex; gap: 20px; list-style: none; }
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.nav-links a:hover { background: rgba(255, 255, 255, 0.2); }
+
+.theme-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.theme-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+main { max-width: 1200px; margin: 2rem auto; padding: 0 5%; }
+
+.view { display: none; animation: fadeIn 0.4s ease; }
+
+.view.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.search-container { margin-bottom: 2rem; }
+
+.search-bar {
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1.1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-bar:focus { border-color: var(--primary); }
+
+.section-title { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+}
+
+.card-title { color: var(--primary); font-size: 1.25rem; font-weight: 600; }
+
+.badge {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--hover-bg);
+    border: 1px solid var(--border);
+}
+
+.badge.urgent { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+
+.teacher-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.teacher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.info-item p { font-weight: 600; }
+.info-item span { color: var(--primary); }
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.resource-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.resource-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--hover-bg);
+}
+
+.routine-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.routine-img-wrapper {
+    width: 100%;
+    margin: 1.5rem 0;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.routine-display-img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    background: #f8fafc;
+}
+
+.routine-container a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.watermark {
+    text-align: center;
+    padding: 25px 20px;
+    margin-top: 50px;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    opacity: 0.85;
+    border-top: 1px solid var(--border);
+    line-height: 1.8;
+}
+
+.watermark .name {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.watermark .highlight {
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="switchView('home-view')">
+        <div class="logo-g">G</div>
+        SWE 43-G
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a onclick="switchView('home-view')">Dashboard</a></li>
+            <li><a onclick="switchView('routine-view')">Routines</a></li>
+            <li><a onclick="switchView('announcement-view')">Notices</a></li>
+        </ul>
+        <button class="theme-btn" onclick="toggleTheme()">Dark Mode</button>
+    </nav>
+</header>
+
+<main>
+    <div id="home-view" class="view active">
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-bar" placeholder="Search courses...">
+        </div>
+
+        <h2 class="section-title">Current Courses</h2>
+        <div class="grid" id="course-grid"></div>
+
+        <h2 class="section-title">Recent Announcements</h2>
+        <div class="grid" id="announcement-preview"></div>
+    </div>
+
+    <div id="course-view" class="view">
+        <button class="back-btn" onclick="switchView('home-view')">← Back to Dashboard</button>
+        <h1 id="course-title" class="section-title" style="font-size: 2rem; margin-bottom: 1rem;"></h1>
+        
+        <div class="teacher-card">
+            <h3>Course Instructor Info</h3>
+            <div class="teacher-grid">
+                <div class="info-item"><p>Name: <span id="teacher-name"></span></p></div>
+                <div class="info-item"><p>Email: <span id="teacher-email"></span></p></div>
+                <div class="info-item"><p>Room: <span id="teacher-room"></span></p></div>
+                <div class="info-item"><p>Consultation: <span id="teacher-time"></span></p></div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Course Resources</h2>
+        <div class="resources-grid" id="resource-grid"></div>
+    </div>
+
+    <div id="routine-view" class="view">
+        <button class="back-btn" onclick="switchView('home-view')">← Back to Dashboard</button>
+        <h2 class="section-title">Academic Schedules</h2>
+        
+        <div class="routine-container">
+            <h3>Class Routine</h3>
+            <div class="routine-img-wrapper">
+                <img src="class_routine.jpeg" alt="Class Routine View" class="routine-display-img">
+            </div>
+            <a href="class_routine.jpeg" target="_blank">Open Full Image</a>
+        </div>
+        
+        <div class="routine-container">
+            <h3>Lab Schedule</h3>
+            <div class="routine-img-wrapper">
+                <img src="lab_schedule.png" alt="Lab Schedule View" class="routine-display-img">
+            </div>
+            <a href="lab_schedule.png" target="_blank">Open Full Image</a>
+        </div>
+        
+        <div class="routine-container">
+            <h3>Exam Routine</h3>
+            <div class="routine-img-wrapper">
+                <img src="exam_routine.png" alt="Exam Routine View" class="routine-display-img">
+            </div>
+            <a href="exam_routine.png" target="_blank">Open Full Image</a>
+        </div>
+    </div>
+
+    <div id="announcement-view" class="view">
+        <button class="back-btn" onclick="switchView('home-view')">← Back to Dashboard</button>
+        <h2 class="section-title">All Announcements</h2>
+        <div class="grid" id="announcement-full"></div>
+    </div>
+
+    <div class="watermark">
+        Developed & Maintained by <span class="name">MD. HRIDOY HASAN APON</span><br>
+        <span class="highlight">Class Representative (CR)</span> | Section: SWE 43-G<br>
+        Undergraduate Software Engineering Student, Daffodil International University<br>
+        Junior Penetration Tester at <span class="highlight">HackerOne</span> & Remote Cyber Security Intern (Singapore)<br>
+        Contact: <a href="mailto:hridoyhasanapon02@gmail.com" style="color: var(--primary); text-decoration: none; font-weight: 600;">hridoyhasanapon02@gmail.com</a>
+    </div>
+</main>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAm0Q97h8ZJcdQz_Q3wwDuiNL5pNM_7ZT8",
+        authDomain: "swe-43-g-portal.firebaseapp.com",
+        projectId: "swe-43-g-portal",
+        storageBucket: "swe-43-g-portal.firebasestorage.app",
+        messagingSenderId: "545475728530",
+        appId: "1:545475728530:web:fdcd19920c31db16f9c24b",
+        measurementId: "G-2SFVC4DTPK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const courses = [
+        { 
+            id: 1, 
+            title: "Desktop & Web Programming", 
+            teacher: "Khalid Masum", 
+            email: "khalid.swe@diu.edu.bd", 
+            room: "N/A", 
+            time: "N/A",
+            links: {
+                "Recorded Classes": "https://drive.google.com/drive/folders/11eJtSEAKVTIGAETD1Fut2x_vpwx_wyEh?usp=sharing",
+                "Materials": "https://drive.google.com/drive/folders/1VDK6MbeXhG50DLj_vSp6P8TuJB2dk83m?usp=sharing",
+                "Previous Questions": "https://drive.google.com/drive/folders/11uCqEl6kAAuE_e-Elgnsso9geoQvKkUK?usp=sharing",
+                "Notes": "https://drive.google.com/drive/folders/11GCYkMdnV-w_M8msJzCzPxFjlrBuqwoH?usp=sharing",
+                "BLC": "https://docs.google.com/document/d/1dDY5DAMtaP-xl06suF55HVQa0pj0M_8J7CRF2aOyucA/edit?usp=sharing",
+                "Important Links": "https://docs.google.com/document/d/1b3b17oWKyV1Z-LsAyYcA0zTNcQpiya9PJIlf5_FMnaU/edit?usp=sharing"
+            }
+        },
+        { 
+            id: 2, 
+            title: "Desktop & Web Programming Lab", 
+            teacher: "Khalid Masum", 
+            email: "khalid.swe@diu.edu.bd", 
+            room: "N/A", 
+            time: "N/A",
+            links: {
+                "Recorded Classes": "https://drive.google.com/drive/folders/1NLnilLHMUQXsKN-r1j3KjORtu-_sx_1N?usp=sharing",
+                "Materials": "https://drive.google.com/drive/folders/1gvnD6Qw0w4_w5r2Sk_IC9CnCzP7xidcv?usp=sharing",
+                "Previous Questions": "https://drive.google.com/drive/folders/1KtLrVZf1xv79oPb2ios9OpSbphX1ItMT?usp=sharing",
+                "Notes": "https://drive.google.com/drive/folders/1v2NKRRykmvi_J74fJFejaxwA6obcaZn3?usp=sharing",
+                "BLC": "https://docs.google.com/document/d/1aZV_8sHMk-vs-o60s6k9XwavYPEALW99T_1pn0o4U2s/edit?usp=sharing",
+                "Important Links": "https://docs.google.com/document/d/1FOadRo8gt5ndMtctg4Ko41_JpHYgZ5RPP8vcKRCib3s/edit?usp=sharing"
+            }
+        },
+        { 
+            id: 3, 
+            title: "System Analysis & Design Capstone Project", 
+            teacher: "Md. Selim Reza", 
+            email: "selim.swe0161.c@diu.edu.bd", 
+            room: "Room 805", 
+            time: "N/A",
+            links: {
+                "Recorded Classes": "https://drive.google.com/drive/folders/1FjPtFM3kV2SnhOEBWv5m3ByamRyvIa0i?usp=sharing",
+                "Materials": "https://drive.google.com/drive/folders/1E32coTY1AXUTdCa4fFqwRn6uik4rwjf7?usp=sharing",
+                "Previous Questions": "https://drive.google.com/drive/folders/1QoUAs_4mxZn2kM3sRQ6Ijw3YZtUFPtMc?usp=sharing",
+                "Notes": "https://drive.google.com/drive/folders/1e2tYt_9O_Y0kMgLv8OOs85jHw9bOgiiX?usp=sharing",
+                "BLC": "https://docs.google.com/document/d/1btr9UDL5AZ5Vf_R7gDxT-ypo-U1I2O1v1-P-cYWOK6s/edit?usp=sharing",
+                "Important Links": "https://docs.google.com/document/d/1_wKit8IFub1VemJBWcVwwlIVcW1IpMtOqOlSmnVIQGM/edit?usp=sharing"
+            }
+        },
+        { 
+            id: 4, 
+            title: "Operating System", 
+            teacher: "Md. Mahabul Alom Santo", 
+            email: "N/A", 
+            room: "N/A", 
+            time: "N/A",
+            links: {
+                "Recorded Classes": "https://drive.google.com/drive/folders/117vx1XwIcnAPYJV1BwxNZRkraapR5HVm?usp=sharing",
+                "Materials": "https://drive.google.com/drive/folders/1ajiw7H3AjDf95lfHnXBI4GWg2cBB5zHG?usp=sharing",
+                "Previous Questions": "https://drive.google.com/drive/folders/1IwgpUR89_X8ZnpButWOVsBqBXM2Rtk9Y?usp=sharing",
+                "Notes": "https://drive.google.com/drive/folders/1FrKbhki0rYvmDHk1ELSv8Vp3NSgvXa-S?usp=sharing",
+                "BLC": "https://docs.google.com/document/d/17MyZrdK1Rqk6cG4cI_m6WDsAbwbfiaAm0eRhQK6kJNs/edit?usp=sharing",
+                "Important Links": "https://docs.google.com/document/d/163reemDpv64zfOhU2bGPid4tmTpRNXoJNghhrUQyFRM/edit?usp=sharing"
+            }
+        },
+        { 
+            id: 5, 
+            title: "Operating System Lab", 
+            teacher: "Md. Mahabul Alom Santo", 
+            email: "N/A", 
+            room: "N/A", 
+            time: "N/A",
+            links: {
+                "Recorded Classes": "https://drive.google.com/drive/folders/1aAomlt4LDKg3EJUPEfeKJK1FtBDLvlGL?usp=sharing",
+                "Materials": "https://drive.google.com/drive/folders/1680_AwzcoAbrf6QZHyY1BWREfENKUsf8?usp=sharing",
+                "Previous Questions": "https://drive.google.com/drive/folders/1jU73cjqOv7CphDcu5hH8mVmFjd6q9Igq?usp=sharing",
+                "Notes": "https://drive.google.com/drive/folders/16Bp0fyYN4nmaIyx5z-aw_TdZ2lTc3o_K?usp=sharing",
+                "BLC": "https://docs.google.com/document/d/1CUW7ddzg4e3KM1MNmu9_gYrFNG-hgPShp6mU4TYeFN0/edit?usp=sharing",
+                "Important Links": "https://docs.google.com/document/d/1EiNSUSYqNd725rW0DL9p7l58KCreU7rCE4Y-4heuqWc/edit?usp=sharing"
+            }
+        },
+        { 
+            id: 6, 
+            title: "Theory of Computing", 
+            teacher: "Shazzad Hossain", 
+            email: "shazzad.swe@diu.edu.bd", 
+            room: "N/A", 
+            time: "N/A",
+            links: {
+                "Recorded Classes": "https://drive.google.com/drive/folders/11NHIKRDo9d4rMeqotTm-8VYOw6pXj2bL?usp=sharing",
+                "Materials": "https://drive.google.com/drive/folders/10Ynk-hmtKCQzaATK6Ed59j3BjQOCQsJM?usp=sharing",
+                "Previous Questions": "https://drive.google.com/drive/folders/1YyCeLOOxr8KdX6FgMVty2dTafpB9ykRk?usp=sharing",
+                "Notes": "https://drive.google.com/drive/folders/1MVt4-CkQEieXv18ezAJ0RlomkcHBqeks?usp=sharing",
+                "BLC": "https://docs.google.com/document/d/1Vm4nkpHrR7n1NbgS0Y6OWMNmdS--3HonptuvWy_kSIk/edit?usp=sharing",
+                "Important Links": "https://docs.google.com/document/d/1RYJm6DXjnkq4-ArBW8VulC8AqLZnWA1ywAXNAM2HD4E/edit?usp=sharing"
+            }
+        }
+    ];
+
+    const resourceTypes = [
+        "Recorded Classes", "Materials", "Previous Questions", 
+        "Notes", "BLC", "Important Links"
+    ];
+
+    window.switchView = function(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    window.openCourse = function(courseData) {
+        document.getElementById('course-title').innerText = courseData.title;
+        document.getElementById('teacher-name').innerText = courseData.teacher;
+        document.getElementById('teacher-email').innerText = courseData.email;
+        document.getElementById('teacher-room').innerText = courseData.room;
+        document.getElementById('teacher-time').innerText = courseData.time;
+
+        const resGrid = document.getElementById('resource-grid');
+        resGrid.innerHTML = '';
+        
+        resourceTypes.forEach(res => {
+            const a = document.createElement('a');
+            a.className = 'resource-btn';
+            
+            if (courseData.links && courseData.links[res] && courseData.links[res] !== "PASTE_YOUR_DRIVE_LINK_HERE" && courseData.links[res] !== "PASTE_YOUR_BLC_LINK_HERE" && courseData.links[res] !== "PASTE_YOUR_LINK_HERE") {
+                a.href = courseData.links[res];
+            } else {
+                a.href = "https://drive.google.com/drive/u/0/my-drive";
+            }
+            
+            a.target = "_blank";
+            a.innerText = res;
+            resGrid.appendChild(a);
+        });
+
+        switchView('course-view');
+    }
+
+    function renderCards(containerId, items, isCourse) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            
+            if (isCourse) {
+                div.onclick = () => window.openCourse(item);
+                div.innerHTML = `
+                    <div class="card-title">${item.title}</div>
+                    <div>Teacher: ${item.teacher}</div>
+                `;
+            } else {
+                const urgentClass = item.urgent ? 'urgent' : '';
+                const descHtml = item.description ? `<p style="font-size: 0.95rem; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--text-color); white-space: pre-wrap; opacity: 0.9;">${item.description}</p>` : '';
+                
+                div.innerHTML = `
+                    <span class="badge ${urgentClass}">${item.type}</span>
+                    <div class="card-title">${item.title}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Date: ${item.date}</div>
+                    ${descHtml}
+                `;
+            }
+            container.appendChild(div);
+        });
+    }
+
+    window.handleSearch = function(e) {
+        const query = e.target.value.toLowerCase();
+        const filteredCourses = courses.filter(c => c.title.toLowerCase().includes(query));
+        renderCards('course-grid', filteredCourses, true);
+    }
+
+    window.toggleTheme = function() {
+        const body = document.documentElement;
+        const btn = document.querySelector('.theme-btn');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            btn.innerText = 'Dark Mode';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            btn.innerText = 'Light Mode';
+        }
+    }
+
+    document.getElementById('search-input').addEventListener('input', window.handleSearch);
+    renderCards('course-grid', courses, true);
+
+    async function loadAnnouncements() {
+        try {
+            const q = query(collection(db, "announcements"), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
+            const dynamicAnnouncements = [];
+            
+            querySnapshot.forEach((doc) => {
+                dynamicAnnouncements.push(doc.data());
+            });
+
+            if (dynamicAnnouncements.length > 0) {
+                renderCards('announcement-preview', dynamicAnnouncements.slice(0, 2), false);
+                renderCards('announcement-full', dynamicAnnouncements, false);
+            } else {
+                document.getElementById('announcement-preview').innerHTML = "<p style='padding: 10px;'>No recent notices.</p>";
+                document.getElementById('announcement-full').innerHTML = "<p style='padding: 10px;'>No notices available.</p>";
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    loadAnnouncements();
+</script>
+</body>
+</html>
